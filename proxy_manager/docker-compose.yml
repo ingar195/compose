@@ -2,14 +2,18 @@ version: '3.3'
 services:
   app:
     image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
     ports:
       - '80:80'
       - '81:81'
       - '443:443'
-
+    env_file:
+      - ./.env
     volumes:
-      - /data/proxy_manager/data:/data
-      - /data/proxy_manager/letsencrypt:/etc/letsencrypt
-
-
+      - /docker/proxy_manager/data/data:/data
+      - /docker/proxy_manager/data/letsencrypt:/etc/letsencrypt
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    env_file:
+      - ./.env
+    volumes:
+      - /docker/proxy_manager/data/mysql:/var/lib/mysql
