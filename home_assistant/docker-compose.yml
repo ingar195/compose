@@ -4,60 +4,64 @@ services:
         privileged: true
         container_name: 'HomeAssistant'
         image: 'ghcr.io/home-assistant/home-assistant:latest'
-        restart: always
+        restart: unless-stopped
         network_mode: host
         ports:
-          - '8234:8123'
+            - '8234:8123'
         volumes:
-          - '/docker/home_assistant/data/config:/config:rw'
-          - '/etc/localtime:/etc/localtime:ro'
-          - '/etc/timezone:/etc/timezone:ro'
+            - '/docker/home_assistant/data/config:/config:rw'
+            - '/etc/localtime:/etc/localtime:ro'
+            - '/etc/timezone:/etc/timezone:ro'
         environment:
-          - 'TZ=Europa/Oslo'        
+            - 'TZ=Europa/Oslo'
         deploy:
-          replicas: 1
+            replicas: 1
 
     mqtt:
         container_name: mosquitto
         image: eclipse-mosquitto:latest
+        restart: unless-stopped
         ports:
-          - "1883:1883"
-          - "9002:9001"
+            - "1883:1883"
+            - "9002:9001"
         volumes:
-          - /docker/home_assistant/data/mosquitto/config/:/mosquitto/config:rw
-          - /docker/home_assistant/data/mosquitto/log/:/mosquitto/log
-          - /docker/home_assistant/data/mosquitto/data/:/mosquitto/data
+            - /docker/home_assistant/data/mosquitto/config/:/mosquitto/config:rw
+            - /docker/home_assistant/data/mosquitto/log/:/mosquitto/log
+            - /docker/home_assistant/data/mosquitto/data/:/mosquitto/data
         deploy:
-          replicas: 1
+            replicas: 1
 
     nodered:
         image: nodered/node-red:latest
+        restart: unless-stopped
         ports:
-          - "1880:1880"
+            - "1880:1880"
         volumes:
-          - /docker/home_assistant/data/nodered:/data
+            - /docker/home_assistant/data/nodered:/data
         deploy:
-          replicas: 1
+            replicas: 1
 
     tasmoadmin:
         image: ghcr.io/tasmoadmin/tasmoadmin:latest
+        restart: unless-stopped
         ports:
-          - "8000:80"
+            - "8000:80"
         volumes:
-          - /docker/home_assistant/data/tasmoadmin:/data          
+            - /docker/home_assistant/data/tasmoadmin:/data
         deploy:
-          replicas: 1
+            replicas: 1
+
     duplicati:
-      image: lscr.io/linuxserver/duplicati:latest
-      container_name: duplicati
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Oslo
-        - CLI_ARGS= #optional
-      volumes:
-        - /docker/home_assistant/data/duplicati:/config
-        - /docker:/source
-      ports:
-        - 8200:8200
-      restart: unless-stopped
+        image: lscr.io/linuxserver/duplicati:latest
+        restart: unless-stopped
+        container_name: duplicati
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Oslo
+            - CLI_ARGS= #optional
+        volumes:
+            - /docker/home_assistant/data/duplicati:/config
+            - /docker:/source
+        ports:
+            - 8200:8200

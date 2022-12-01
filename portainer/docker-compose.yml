@@ -5,6 +5,7 @@ services:
         container_name: portainer
         #image: portainer/portainer
         image: portainer/portainer-ce
+        restart: unless-stopped
         volumes:
             - '/var/run/docker.sock:/var/run/docker.sock'
             - '/docker/portainer/data:/data'
@@ -12,4 +13,3 @@ services:
             - '9000:9000'
         environment:
             - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-        restart: "no"

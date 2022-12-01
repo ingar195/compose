@@ -1,17 +1,17 @@
 version: '3.9'
 services:
-  app:
-    image: 'louislam/uptime-kuma:latest'
-    restart: unless-stopped
-    ports:
-      - '3001:3001'
+    app:
+        image: 'louislam/uptime-kuma:latest'
+        restart: unless-stopped
+        ports:
+            - '3001:3001'
 
-    volumes:
-      - /data/uptime/app:/app/data
+        volumes:
+            - /data/uptime/app:/app/data
 
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        max_replicas_per_node: 1
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+            placement:
+                max_replicas_per_node: 1
