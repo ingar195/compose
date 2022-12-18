@@ -1,0 +1,209 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/lovelace-card-mod/card-mod.js
+    
+# homeassistant:
+#   customize:
+#     tesla_charger_energy:
+#       state_class: measurement
+
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+cloud:
+panel_iframe:
+  portainer:
+    title: "Portainer"
+    url: !secret portainer_url
+    icon: mdi:docker
+    require_admin: true
+  nodered:
+    title: "Node Red"
+    url: !secret nodered_url
+    icon: mdi:nodejs
+    require_admin: true
+  # uptime:
+  #   title: "Uptime"
+  #   url: !secret uptime_url
+  #   icon: mdi:arrow-up-bold-circle
+  #   require_admin: true
+  zigbee2mqtt:
+    title: "Zigbee2MQTT"
+    url: !secret zigbee2mqtt_url
+    icon: mdi:arrow-up-bold-circle
+    require_admin: true
+  zwavejs:
+    title: "Z-Wave JS"
+    url: !secret zwavejs_url
+    icon: mdi:z-wave
+    require_admin: true
+  duplicati:
+    title: "Duplicati"
+    url: !secret duplicati_url
+    icon: mdi:backup-restore
+    require_admin: true
+
+camera:
+  - platform: xiaomi_cloud_map_extractor
+    host: !secret xiaomi_vacuum_host
+    token: !secret xiaomi_vacuum_token
+    username: !secret xiaomi_cloud_username
+    password: !secret xiaomi_cloud_password
+    draw: ['all']
+    attributes:
+      - calibration_points
+
+nordpool:
+
+mqtt:
+  sensor:
+    - name: "Tesla Battery"
+      state_topic: "tessie/pub/charge_state/battery_level"
+      unique_id: tesla_model_3_battery
+    - name: "Tesla Minutes to full charge"
+      state_topic: "tessie/pub/charge_state/minutes_to_full_charge"
+      unique_id: tesla_model_3_ttc
+      icon: mdi:clock-time-eight
+    - name: "Tesla Voltage"
+      state_topic: "tessie/pub/charge_state/charger_voltage"
+      unique_id: tesla_model_3_voltage
+    - name: "Tesla Amps"
+      state_topic: "tessie/pub/charge_state/charge_amps"
+      unique_id: tesla_model_3_amps
+      icon: mdi:battery-60
+
+      unit_of_measurement: "%"
+    - name: "Waste date"
+      state_topic: "arim/waste/date"
+    - name: "Waste epoch"
+      state_topic: "arim/waste/epoch"
+    - name: "Cardboard date"
+      state_topic: "arim/cardboard/date"
+    - name: "Cardboard epoch"
+      state_topic: "arim/cardboard/epoch"
+    - name: "Metal date"
+      state_topic: "arim/metal/date"
+    - name: "Metal epoch"
+      state_topic: "arim/metal/epoch"
+
+powercalc:
+
+sensor:
+  - platform: nordpool
+
+    VAT: True
+    currency: "NOK"
+    price_in_cents: false
+    low_price_cutoff: 0.95
+    region: "Molde"
+    precision: 3
+    price_type: kWh
+
+    additional_costs: '{% set s = {
+      "statlig": 0.1926,
+      "night": 0.1375,
+      "day": 0.2125,
+      "enova": 0.0125,
+      "tibber":0.01
+      }
+      %}
+
+      {% if now().hour >=6 and now().hour <22 %}
+      {{s.day+s.statlig+s.enova+s.tibber|float}}
+      {% else %}
+      {{s.night+s.statlig+s.enova+s.tibber|float}}
+      {% endif %}'
+# Keep      
+  - platform: google_keep
+    username: !secret google_keep.username
+    password: !secret google_keep.password
+    labels:
+      - 'Home Assistant'
+    pinned: true
+  
+
+  - platform: template
+    sensors:
+      washer_bottom_filtered:
+        friendly_name: 'Washer Bottom Filtered'
+        unique_id: washer_bottom_filtered
+        device_class: power
+        unit_of_measurement: "W"
+        value_template: >-
+          {% set w = (((states('sensor.washer_bottom_power') |float|round(3)))) %}
+          {% set low = 0 %}
+          {% set high = 3680 %}
+          {% if w <= low %}
+            {{ low }}
+          {% elif w >= high %}
+            {{ high }}
+          {% else %}
+            {{ w }}
+          {% endif %}
+
+      energy_unaccounted:
+        friendly_name: 'Energy unaccounted for'
+        unique_id: energy_unaccounted
+        unit_of_measurement: "W"
+        value_template: >-
+          {% set unaccounted = (((states('sensor.kamstrup_active_power_import') |float|round(3)) - (states('sensor.combined_power_power') |float|round(3)))) %}
+          {% if unaccounted  >=0 -%}
+            {{unaccounted}}
+          {%- else -%}
+            0
+          {%- endif %}
+
+      tesla_charger_power:
+        friendly_name: 'Tesla Charger Power'
+        unique_id: 'tessie_tesla_charger_power'
+        device_class: power
+        unit_of_measurement: "W"
+        value_template: >-
+          {% if states("device_tracker.tesla_model_3")  == "home" -%}
+            {% if states("sensor.tesla_voltage") |float|round(3)  > 150 -%}
+              {{(((states('sensor.tesla_amps') |float|round(3)) * (states('sensor.tesla_voltage') |float|round(3))))}}
+            {%- else -%}
+              0
+            {%- endif %}
+          {%- else -%}
+            0
+          {%- endif %}   
+
+      tesla_charger_energy:
+        unique_id: tessie_tesla_charger_energy
+        unit_of_measurement: kWh
+        device_class: energy
+        # state_class: total_increasing
+        value_template: >-
+          {{ 
+            states('sensor.tesla_charger_power')|float(0) / 1000
+          }}
+
+
+  - platform: integration
+    source: sensor.kamstrup_active_power_import
+    name: House Energy kWh
+    unit_prefix: k
+    unit_time: h
+    round: 2
+
+influxdb:
+  api_version: 2
+  ssl: false
+  host: !secret influx_host
+  port: !secret influx_port
+  token: !secret influx_token
+  organization: !secret influx_organization
+  bucket: !secret influx_bucket
