@@ -13,6 +13,8 @@ services:
             - 1111:8080
         environment:
             - TZ=Europe/Berlin
+        env_file:
+            - .env
         devices:
             # Make sure this matched your adapter location
             - /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2484123-if00:/dev/ttyACM0
