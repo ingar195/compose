@@ -16,7 +16,6 @@ services:
         env_file:
             - .env
         devices:
-            # Make sure this matched your adapter location
             - /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2484123-if00:/dev/ttyACM0
 
     zwavejs2mqtt:
@@ -26,6 +25,8 @@ services:
         restart: unless-stopped
         network_mode: host
         stop_signal: SIGINT
+        depends_on:
+            - zigbee2mqtt
         environment:
             - SESSION_SECRET=<mysupersecretkey>
             - ZWAVEJS_EXTERNAL_CONFIG=/usr/src/app/store/.config-db
@@ -33,6 +34,7 @@ services:
         volumes:
             - /docker/rpi/data/zwavejs2mqtt:/usr/src/app/store
             - /dev/serial/by-id/usb-0658_0200-if00:/dev/zwave
+
         ports:
             - "8091:8091" # port for web interface
             - "3000:3000" # port for Z-Wave JS websocket server
