@@ -207,3 +207,10 @@ influxdb:
   token: !secret influx_token
   organization: !secret influx_organization
   bucket: !secret influx_bucket
+
+device_tracker:
+  - platform: mqtt_json
+    devices:
+      tesla_model_3: "tessie/pub/location"
+      unique_id: tesla_model_3_tracker
+      friendly_name: "Tesla Model 3"
