@@ -72,17 +72,21 @@ mqtt:
     - name: "Tesla Battery"
       state_topic: "tessie/pub/charge_state/battery_level"
       unique_id: tesla_model_3_battery
+      state_class: measurement
     - name: "Tesla Minutes to full charge"
       state_topic: "tessie/pub/charge_state/minutes_to_full_charge"
       unique_id: tesla_model_3_ttc
+      state_class: measurement
       icon: mdi:clock-time-eight
     - name: "Tesla Voltage"
       state_topic: "tessie/pub/charge_state/charger_voltage"
       unique_id: tesla_model_3_voltage
+      state_class: measurement
     - name: "Tesla Amps"
       state_topic: "tessie/pub/charge_state/charge_amps"
       unique_id: tesla_model_3_amps
       icon: mdi:battery-60
+      state_class: measurement
 
       unit_of_measurement: "%"
     - name: "Waste date"
