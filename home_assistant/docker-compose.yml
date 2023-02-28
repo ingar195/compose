@@ -78,3 +78,17 @@ services:
         - 8086:8086
         deploy:
             replicas: 1
+
+    esphome:
+        container_name: esphome
+        privileged: true
+        image: esphome/esphome
+        volumes:
+        - /docker/home_assistant/data/esphome:/config
+        - /etc/localtime:/etc/localtime:ro
+        restart: unless-stopped
+        network_mode: host
+        ports:
+        - 6052:6052
+        deploy:
+            replicas: 1
