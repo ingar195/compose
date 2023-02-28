@@ -34,11 +34,6 @@ panel_iframe:
     url: !secret esphome_url
     icon: mdi:car-esp
     require_admin: true
-  zigbee2mqtt:
-    title: "Zigbee2MQTT"
-    url: !secret zigbee2mqtt_url
-    icon: mdi:arrow-up-bold-circle
-    require_admin: true
   zwavejs:
     title: "Z-Wave JS"
     url: !secret zwavejs_url
