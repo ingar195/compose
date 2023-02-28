@@ -24,21 +24,16 @@ scene: !include scenes.yaml
 
 cloud:
 panel_iframe:
-  portainer:
-    title: "Portainer"
-    url: !secret portainer_url
-    icon: mdi:docker
-    require_admin: true
   nodered:
     title: "Node Red"
     url: !secret nodered_url
     icon: mdi:nodejs
     require_admin: true
-  # uptime:
-  #   title: "Uptime"
-  #   url: !secret uptime_url
-  #   icon: mdi:arrow-up-bold-circle
-  #   require_admin: true
+  esp_home:
+    title: "espHome"
+    url: !secret esphome_url
+    icon: mdi:car-esp
+    require_admin: true
   zigbee2mqtt:
     title: "Zigbee2MQTT"
     url: !secret zigbee2mqtt_url
