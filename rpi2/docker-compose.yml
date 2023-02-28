@@ -1,23 +1,5 @@
 version: '3.3'
 services:
-    # zigbee2mqtt:
-    #     container_name: zigbee2mqtt
-    #     image: koenkk/zigbee2mqtt:latest
-    #     restart: unless-stopped
-    #     # network_mode: host
-    #     volumes:
-    #         - /docker/rpi/data/zigbee2mqtt:/app/data
-    #         - /run/udev:/run/udev:ro
-    #     ports:
-    #         # Frontend port
-    #         - 1111:8080
-    #     environment:
-    #         - TZ=Europe/Berlin
-    #     env_file:
-    #         - .env
-    #     devices:
-    #         - /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2484123-if00:/dev/ttyACM0
-
     zwavejs2mqtt:
         container_name: zwavejs2mqtt
         privileged: true
