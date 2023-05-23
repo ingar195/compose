@@ -136,7 +136,7 @@ sensor:
         device_class: power
         unit_of_measurement: "W"
         value_template: >-
-          {% set w = (((states('sensor.washer_bottom_power') |float|round(3)))) %}
+          {% set w = (((states('sensor.sensor.washer_active_power') |float|round(3)))) %}
           {% set low = 0 %}
           {% set high = 3680 %}
           {% if w <= low %}
