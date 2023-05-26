@@ -3,9 +3,10 @@ HomeAssistant:
     container_name: 'HomeAssistant'
     image: 'ghcr.io/home-assistant/home-assistant:latest'
     restart: unless-stopped
-    # network_mode: host
+    # network_mode: bridge
     ports:
         - '8234:8123'
+
     volumes:
         - '/docker/home_assistant/data/config:/config:rw'
         - '/etc/localtime:/etc/localtime:ro'
@@ -13,4 +14,16 @@ HomeAssistant:
     environment:
         - 'TZ=Europa/Oslo'
     devices:
-        - /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2484123-if00:/dev/ttyACM0
+        - /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2484123-if00:/dev/ttyACM0 
+
+homebridge:
+    container_name: homebridge
+    image: oznu/homebridge:latest
+    restart: always
+    # network_mode: host
+    ports:
+    - 8581:8581
+    # - 51650:51650 
+    # - 51826:51826
+    volumes:
+    - /docker/home_assistant/data/homebridge:/homebridge
