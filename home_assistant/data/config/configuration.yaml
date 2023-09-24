@@ -54,6 +54,7 @@ camera:
     draw: ['all']
     attributes:
       - calibration_points
+    scan_interval: 300
 
 nordpool:
 
@@ -78,7 +79,6 @@ mqtt:
       icon: mdi:battery-60
       state_class: measurement
 
-      unit_of_measurement: "%"
     - name: "Waste date"
       state_topic: "arim/waste/date"
     - name: "Waste epoch"
@@ -106,18 +106,19 @@ sensor:
     price_type: kWh
 
     additional_costs: '{% set s = {
-      "statlig": 0.1926,
-      "night": 0.1375,
-      "day": 0.2125,
+      "statlig": 0.1980,
+      "night": 0.3667,
+      "day": 0.4542,
       "enova": 0.0125,
-      "tibber":0.01
+      "tibber":0.01,
+      "non_mørenett": 0.0625
       }
       %}
 
       {% if now().hour >=6 and now().hour <22 %}
-      {{s.day+s.statlig+s.enova+s.tibber|float}}
+      {{s.day+s.statlig+s.enova+s.tibber+s.non_mørenett|float}}
       {% else %}
-      {{s.night+s.statlig+s.enova+s.tibber|float}}
+      {{s.night+s.statlig+s.enova+s.tibber+s.non_mørenett|float}}
       {% endif %}'
 # Keep      
   - platform: google_keep
@@ -136,7 +137,7 @@ sensor:
         device_class: power
         unit_of_measurement: "W"
         value_template: >-
-          {% set w = (((states('sensor.sensor.washer_active_power') |float|round(3)))) %}
+          {% set w = (((states('sensor.washer_active_power') |float|round(3)))) %}
           {% set low = 0 %}
           {% set high = 3680 %}
           {% if w <= low %}
